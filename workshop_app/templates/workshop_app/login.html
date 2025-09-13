@@ -1,4 +1,4 @@
-{% extends 'workshop_app/base.html' %}
+<!-- {% extends 'workshop_app/base.html' %}
 
 {% block title %}
     Login
@@ -50,4 +50,43 @@
             </div>
         </div>
     </div>
+{% endblock %} -->
+
+{% extends 'workshop_app/base.html' %}
+
+{% block title %}
+    Workshop Type Details
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h2 class="mb-0">{{ workshop_type.name }}</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Duration:</strong> {{ workshop_type.duration }} Days
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Description:</strong> 
+                            {% if workshop_type.description %}
+                                {{ workshop_type.description }}
+                            {% else %}
+                                <span class="text-muted">Not provided.</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer text-end">
+                     <a href="{% url 'workshop_app:workshop_type_list' %}" class="btn btn-secondary">Back to List</a>
+                     <a href="{% url 'workshop_app:edit_workshop_type' workshop_type.id %}" class="btn btn-primary">Edit</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
