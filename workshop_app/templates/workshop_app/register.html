@@ -1,103 +1,131 @@
 {% extends 'workshop_app/base.html' %}
 
 {% block title %}Register{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+    .input-group-text {
+        background: #f8f9fa;
+        border-right: 0;
+    }
+    .form-control {
+        border-left: 0;
+        transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .form-control:focus {
+        border-color: #0056b3;
+        box-shadow: 0 0 0 0.2rem rgba(0,86,179,0.1);
+    }
+    .btn-primary {
+        transition: background 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 16px rgba(0,86,179,0.08);
+    }
+    .btn-primary:hover {
+        background: #003d80;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container mt-5 pt-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-body p-4">
                     <h2 class="card-title text-center mb-4">Create an Account</h2>
-                    <form method="post">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                         {% csrf_token %}
 
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger" role="alert">
-                                {% for error in form.non_field_errors %}
-                                    {{ error }}
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <div>{{ error }}</div>
                                 {% endfor %}
-                            </div>
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
                         {% endif %}
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
-                                <input type="text" name="first_name" id="{{ form.first_name.id_for_label }}" class="form-control" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
-                                <input type="text" name="last_name" id="{{ form.last_name.id_for_label }}" class="form-control" required>
-                            </div>
-                        </div>
-
+                        {% for field in form %}
                         <div class="mb-3">
-                            <label for="{{ form.email.id_for_label }}" class="form-label">Email address</label>
-                            <input type="email" name="email" id="{{ form.email.id_for_label }}" class="form-control" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                            <input type="text" name="username" id="{{ form.username.id_for_label }}" class="form-control" required>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
-                                <input type="password" name="password" id="{{ form.password.id_for_label }}" class="form-control" required>
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            <div class="input-group">
+                                {% if field.field.widget.input_type == 'text' and field.name == 'username' %}
+                                    <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                                {% elif field.field.widget.input_type == 'text' and field.name == 'first_name' %}
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                {% elif field.field.widget.input_type == 'text' and field.name == 'last_name' %}
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                {% elif field.field.widget.input_type == 'email' %}
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                {% elif field.field.widget.input_type == 'password' and field.name == 'password' %}
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                {% elif field.field.widget.input_type == 'password' and field.name == 'confirm_password' %}
+                                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                {% elif field.name == 'phone_number' %}
+                                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                {% elif field.name == 'institute' %}
+                                    <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                {% elif field.name == 'department' %}
+                                    <span class="input-group-text"><i class="bi bi-diagram-3"></i></span>
+                                {% elif field.name == 'location' %}
+                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                {% elif field.name == 'state' %}
+                                    <span class="input-group-text"><i class="bi bi-flag"></i></span>
+                                {% elif field.name == 'how_did_you_hear_about_us' %}
+                                    <span class="input-group-text"><i class="bi bi-info-circle"></i></span>
+                                {% elif field.name == 'title' %}
+                                    <span class="input-group-text"><i class="bi bi-person-badge-fill"></i></span>
+                                {% endif %}
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted ms-2">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% if field.errors %}
+                                    <div class="invalid-feedback d-block ms-2">
+                                        {% for error in field.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
-                                <input type="password" name="password2" id="{{ form.password2.id_for_label }}" class="form-control" required>
-                            </div>
                         </div>
+                        {% endfor %}
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Register</button>
-                        </div>
-                    </form>
-                    <hr>
-                    <div class="text-center">
-                        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
-                    </div>
+                        <button type="submit" class="btn btn-primary w-100 mb-2">Register</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+  // Bootstrap validation
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
 {% endblock %}
-<!-- {% extends 'workshop_app/base.html' %}
-
-	{% block title %}
-		Register
-	{% endblock %}
-
-{% block content %}
-
-	<style type="text/css">
-    	label.required::after {
-    	content: "*";
-    	color: red;
-		}
-
-		.errorlist {
-      color: red;
-    }
-	</style>
-
-	<div class="container" >
-		<br>
-		<h3>Coordinator Registration Form</h3>
-		<br>
-		<form action="" method="post">
-			{% csrf_token %}
-				<table class="table table-bordered">
-					{{ form.as_table }}
-				</table>
-
-				<button class="btn btn-primary" type="submit">Register</button>
-		</form><br>
-		 Activate when Instructor registeration starts -->
-		<!-- <br>
-	</div>
-{% endblock %} -->
+<!-- Duplicate block and legacy code removed to fix TemplateSyntaxError. -->

@@ -1,0 +1,45 @@
+{% extends 'workshop_app/base.html' %}
+
+{% block title %}Welcome to FOSSEE Workshop Portal{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+    .hero-logo {
+        animation: popIn 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+        border-radius: 1rem;
+        box-shadow: 0 4px 24px rgba(0,86,179,0.08);
+    }
+    @keyframes popIn {
+        0% { transform: scale(0.7); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .btn-primary, .btn-outline-primary {
+        transition: background 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 16px rgba(0,86,179,0.08);
+    }
+    .btn-primary:hover, .btn-outline-primary:hover {
+        background: #003d80;
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-5 text-center">
+                    <img src="{% static 'workshop_app/images/fossee_logo.png' %}" alt="FOSSEE Logo" width="64" height="64" class="mb-3 hero-logo">
+                    <h1 class="display-5 fw-bold mb-3">Welcome to FOSSEE Workshops</h1>
+                    <p class="lead mb-4">A platform for students and educators to <span class="text-primary"><i class="bi bi-search"></i> discover</span>, <span class="text-success"><i class="bi bi-lightbulb"></i> propose</span>, and <span class="text-warning"><i class="bi bi-gear"></i> manage</span> workshops with ease.<br>Explore available workshops, register, or log in to get started!</p>
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                        <a href="{% url 'workshop_app:register' %}" class="btn btn-primary btn-lg px-4 gap-3"><i class="bi bi-person-plus me-2"></i>Get Started</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg px-4"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

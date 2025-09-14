@@ -2,9 +2,9 @@
 # db etc.
 
 
-EMAIL_HOST = 'YOUR HOST'
-EMAIL_PORT = 'YOUR HOST PORT'
-EMAIL_HOST_USER = 'Your mail'
-EMAIL_HOST_PASSWORD = 'Your Password'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'strawhatluffy010305@gmail.com'  # <-- Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'strawhatluffy010305'   # <-- Replace with your Gmail App Password
 EMAIL_USE_TLS = True
-SENDER_EMAIL = 'YOUR PRODUCTION MAIL'
+SENDER_EMAIL = 'strawhatluffy010305@gmail.com'     # <-- Replace with your Gmail address

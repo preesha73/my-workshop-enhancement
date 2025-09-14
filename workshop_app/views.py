@@ -72,31 +72,38 @@ def index(request):
 def user_login(request):
     """User Login"""
     user = request.user
+    print(f"[DEBUG] user_login: user={user}, authenticated={user.is_authenticated}")
     if user.is_superuser:
+        print("[DEBUG] Redirecting superuser to /admin")
         return redirect('/admin')
     if user.is_authenticated:
+        print(f"[DEBUG] Already authenticated, redirecting to landing page: {get_landing_page(user)}")
         return redirect(get_landing_page(user))
 
     if request.method == "POST":
         form = UserLoginForm(request.POST)
         if form.is_valid():
             user = form.cleaned_data
+            print(f"[DEBUG] Login form valid. user={user}, email_verified={user.profile.is_email_verified}")
             if user.profile.is_email_verified:
                 login(request, user)
+                print(f"[DEBUG] Login successful, redirecting to {get_landing_page(user)}")
                 return redirect(get_landing_page(user))
             else:
+                print("[DEBUG] Email not verified, rendering activation page.")
                 return render(request, 'workshop_app/activation.html')
         else:
-            return render(request, 'workshop_app/login.html', {"form": form})
+            print(f"[DEBUG] Login form invalid: {form.errors}")
+            return render(request, 'registration/login.html', {"form": form})
     else:
         form = UserLoginForm()
-        return render(request, 'workshop_app/login.html', {"form": form})
+        return render(request, 'registration/login.html', {"form": form})
 
 
 def user_logout(request):
     """Logout"""
     logout(request)
-    return render(request, 'workshop_app/logout.html')
+    return redirect('workshop_app:login')
 
 
 def activate_user(request, key=None):
@@ -139,7 +146,16 @@ def user_register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            username, password, key = form.save()
+            try:
+                username, password, key = form.save()
+            except Exception as e:
+                from django.db import IntegrityError
+                if isinstance(e, IntegrityError) and 'auth_user.username' in str(e):
+                    form.add_error('username', 'This username is already taken. Please choose another.')
+                    return render(request, "workshop_app/register.html", {"form": form})
+                else:
+                    form.add_error(None, f"Registration failed: {e}")
+                    return render(request, "workshop_app/register.html", {"form": form})
             new_user = authenticate(username=username, password=password)
             login(request, new_user)
             user_position = request.user.profile.position
@@ -148,7 +164,12 @@ def user_register(request):
                 user_position=user_position,
                 key=key
             )
-            return render(request, 'workshop_app/activation.html')
+            # If you want to force activation before dashboard, keep the next line instead:
+            # return render(request, 'workshop_app/activation.html')
+            if request.user.profile.is_email_verified:
+                return redirect(get_landing_page(request.user))
+            else:
+                return render(request, 'workshop_app/activation.html')
         else:
             if request.user.is_authenticated:
                 return redirect('workshop:view_profile')
@@ -166,6 +187,27 @@ def user_register(request):
 
 
 # Workshop views
+@login_required
+def edit_workshop_type(request, workshop_type_id):
+    if not is_instructor(request.user):
+        return redirect(get_landing_page(request.user))
+
+    workshop_type = WorkshopType.objects.filter(id=workshop_type_id).first()
+    if not workshop_type:
+        # Optional: Show 404 or redirect if not found
+        raise Http404("Workshop Type not found")
+
+    if request.method == 'POST':
+        form = WorkshopTypeForm(request.POST, instance=workshop_type)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Workshop Type updated successfully")
+            return redirect(reverse('workshop_app:workshop_type_details', args=[workshop_type_id]))
+    else:
+        form = WorkshopTypeForm(instance=workshop_type)
+
+    return render(request, 'workshop_app/edit_workshop_type.html', {'form': form})
+
 
 @login_required
 def workshop_status_coordinator(request):

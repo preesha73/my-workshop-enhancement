@@ -79,28 +79,27 @@ class UserRegistrationForm(forms.Form):
         return user_email
 
     def save(self):
-        u_name = self.cleaned_data["username"]
-        u_name = u_name.lower()
+        u_name = self.cleaned_data["username"].lower()
         pwd = self.cleaned_data["password"]
         email = self.cleaned_data["email"]
         new_user = User.objects.create_user(u_name, email, pwd)
         new_user.first_name = self.cleaned_data["first_name"]
         new_user.last_name = self.cleaned_data["last_name"]
         new_user.save()
-
+        # Profile will be created by signal; update its fields after creation
+        profile = Profile.objects.get(user=new_user)
         cleaned_data = self.cleaned_data
-        new_profile = Profile(user=new_user)
-        new_profile.institute = cleaned_data["institute"]
-        new_profile.department = cleaned_data["department"]
-        new_profile.phone_number = cleaned_data["phone_number"]
-        new_profile.location = cleaned_data["location"]
-        new_profile.title = cleaned_data["title"]
-        new_profile.state = cleaned_data["state"]
-        new_profile.how_did_you_hear_about_us = cleaned_data["how_did_you_hear_about_us"]
-        new_profile.activation_key = generate_activation_key(new_user.username)
-        new_profile.key_expiry_time = timezone.now() + timezone.timedelta(days=1)
-        new_profile.save()
-        return u_name, pwd, new_profile.activation_key
+        profile.institute = cleaned_data["institute"]
+        profile.department = cleaned_data["department"]
+        profile.phone_number = cleaned_data["phone_number"]
+        profile.location = cleaned_data["location"]
+        profile.title = cleaned_data["title"]
+        profile.state = cleaned_data["state"]
+        profile.how_did_you_hear_about_us = cleaned_data["how_did_you_hear_about_us"]
+        profile.activation_key = generate_activation_key(new_user.username)
+        profile.key_expiry_time = timezone.now() + timezone.timedelta(days=1)
+        profile.save()
+        return u_name, pwd, profile.activation_key
 
 
 class UserLoginForm(forms.Form):

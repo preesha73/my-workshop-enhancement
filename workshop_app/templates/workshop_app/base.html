@@ -1,101 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 {% load static %}
-{% load custom_filters %}
+
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>
-        {% block title %}
-            HomePage
-        {% endblock %}
-    </title>
-<!-- 
-    <script src="{% static 'workshop_app/js/jquery-3.4.1.min.js' %}"></script>
-    <script src="{% static 'workshop_app/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'workshop_app/js/popper.min.js' %}"></script> -->
-    <script src="{% static 'workshop_app/js/toastr.min.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{% static 'workshop_app/images/fossee_logo.png' %}">
+    <title>{% block title %}FOSSEE Workshops{% endblock %}</title>
 
-
-    {% block extra-dependencies %}
-    {% endblock %}
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', Arial, sans-serif; font-size: 1.08rem; }</style>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="{% static 'workshop_app/css/bootstrap.min.css' %}"> -->
-    <link rel="stylesheet" href="{% static 'workshop_app/css/toastr.min.css' %}">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="{% static 'workshop_app/css/base.css' %}" type="text/css"/> -->
-    <link rel="stylesheet" href="{% static 'workshop_app/css/font-awesome.css' %}" type="text/css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link href="{% static 'workshop_app/css/custom.css' %}" rel="stylesheet">
 
-    {% block extra-custom-scripts %}
-    {% endblock %}
-
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
-{% block header %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="{% if user.is_authenticated %}{% url 'workshop_app:index' %}{% else %}/{% endif %}">FOSSEE Workshops</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
+
+    {% block header %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% if user.is_authenticated %}{% url 'workshop_app:index' %}{% else %}/{% endif %}">
+                <img src="{% static 'workshop_app/images/fossee_logo.png' %}" alt="FOSSEE Logo" width="32" height="32" style="object-fit:contain;" class="d-inline-block align-text-top me-2">
+                FOSSEE Workshops
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Home</a>
+                    </li>
                 </ul>
-
-            {% if user.is_authenticated %}
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ user.get_full_name|title }}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{% url 'workshop_app:view_own_profile' %}">Profile</a></li>
-                        <li><a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'workshop_app:logout' %}">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
-            {% else %}
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'workshop_app:register' %}">Register</a>
-                </li>
-            </ul>
-            {% endif %}
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.get_full_name|title }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'workshop_app:view_own_profile' %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'workshop_app:logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% else %}
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/register/' %}active{% endif %}" href="{% url 'workshop_app:register' %}">Register</a>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
         </div>
-    </div>
-</nav>
-{% endblock %}
-
-<div class="toast-container position-fixed top-0 end-0 p-3">
-  </div>
-
-<div class="base-content">
-    {% block content %}
-        <h1>Base Template Content. Please override me</h1>
+    </nav>
     {% endblock %}
-</div>
 
-<script>
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    </div>
+
+    <main>
+        {% block content %}
+            {% endblock %}
+    </main>
+    
+    <footer class="footer mt-auto py-3 bg-light">
+        {% block footer %}
+            <div class="container text-center">
+                <span class="text-muted">Developed by FOSSEE group, IIT Bombay</span>
+            </div> 
+        {% endblock %}
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
     {% if messages %}
         const toastContainer = document.querySelector('.toast-container');
         {% for message in messages %}
-            // Create the toast HTML element
             const toastEl = document.createElement('div');
-            toastEl.classList.add('toast', 'align-items-center', 'text-white');
+            toastEl.classList.add('toast', 'align-items-center', 'text-white', 'border-0');
             
-            // Map Django message tags to Bootstrap background colors
             const messageTags = "{{ message.tags }}";
             if (messageTags.includes('success')) {
                 toastEl.classList.add('bg-success');
@@ -104,7 +99,7 @@
             } else if (messageTags.includes('warning')) {
                 toastEl.classList.add('bg-warning');
             } else {
-                toastEl.classList.add('bg-primary'); // Default for info
+                toastEl.classList.add('bg-primary');
             }
 
             toastEl.setAttribute('role', 'alert');
@@ -119,23 +114,15 @@
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             `;
-
-            // Append the toast to the container
+            
             toastContainer.appendChild(toastEl);
-
-            // Initialize and show the toast
             const toast = new bootstrap.Toast(toastEl);
             toast.show();
         {% endfor %}
     {% endif %}
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </script>
+
+    {% block extra_js %}{% endblock %}
+
 </body>
-<footer class="footer">
-    {% block footer %}
-       <div class="container">
-           Developed by FOSSEE group, IIT Bombay
-       </div> 
-    {% endblock %}
-</footer>
 </html>

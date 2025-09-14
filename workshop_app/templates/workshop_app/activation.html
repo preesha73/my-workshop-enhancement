@@ -58,10 +58,11 @@
             </div>
         </div>
     {% else %}
+
         <script type="text/javascript">
             window.setTimeout(function () {
                 location.href = "{% url 'workshop_app:logout' %}"
-            }, 5000);
+            }, 15000); // 15 seconds
         </script>
 
         <div class="container">

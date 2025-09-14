@@ -43,6 +43,8 @@ urlpatterns = [
         name='propose_workshop'),
     url(r'^add_workshop_type$', views.add_workshop_type,
         name='add_workshop_type'),
+    url(r'^edit_workshop_type/(?P<workshop_type_id>\d+)$', views.edit_workshop_type, 
+        name='edit_workshop_type'),
     url(r'^delete_attachment_file/(?P<file_id>\d+)$',
         views.delete_attachment_file, name='delete_attachment_file'),
     url(r'^types/$', views.workshop_type_list,
